@@ -44,11 +44,11 @@ function GetSteamPathFromRegistry
 {
   $SteamPath = Get-ItemPropertyValue -Path HKCU:\Software\Valve\Steam -Name SteamPath
   $SteamPath = $SteamPath -replace  "/", "\"
-  $SteamPath = $SteamPath + "\userdata\"
+  $SteamPath = $SteamPath + "\userdata\test\"
   return $SteamPath
 }
 
-function CreateFolders
+function CreateFolders($DropboxPath, $BackupPath)
 {
   if (!(Test-Path -Path $DropboxPath\SteamConfig)) {
     New-Item -ItemType Directory -Path $DropboxPath\SteamConfig
@@ -67,7 +67,7 @@ function BackupAndCreateSymlink
   $UserProfiles = Get-Childitem $SteamProfileDir
   $BackupFolder = $SteamProfileDir + "scriptbackup"
   $DropboxPath = GetDropBoxPathFromInfoJson
-  CreateFolders
+  CreateFolders($DropboxPath,$BackupPath)
 
   foreach ($profile in $UserProfiles) 
   {
