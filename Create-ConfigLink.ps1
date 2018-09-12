@@ -71,12 +71,15 @@ function BackupAndCreateSymlink
 
   foreach ($profile in $UserProfiles) 
   {
-    if ($profile.Name -ne "scriptbackup") 
+    if (($profile.Name -ne "scriptbackup") -and ($profile.LinkType -ne "SymbolicLink")) 
   {
     $fullPath = $profile.FullName
     Move-item -Path $profile.FullName -Destination $BackupFolder
     New-SymLink '$fullPath' $DropboxPath\SteamConfig
   }
+    else {
+      Write-Host "Backup of" $profile "not necessary"
+    }
   }
   return $UserProfiles
 }
