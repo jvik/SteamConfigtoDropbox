@@ -1,3 +1,22 @@
+<#
+.SYNOPSIS
+  Backups up steam user profiles and creates a shared storage in your Dropbox folder
+.DESCRIPTION
+  Backups up steam user profiles and creates a shared storage in your Dropbox folder
+.INPUTS
+  None
+.OUTPUTS
+  None
+.NOTES
+  Version:        1.0
+  Author:         Jørgen Vik
+  Creation Date:  12.09.2018
+  Purpose/Change: Initial script development
+  
+.EXAMPLE
+  ./Reset-Profiles.ps1
+#>
+
 #Function enables symlinks to be created in powershell without elevation
 Function New-SymLink ($link, $target)
 {
@@ -29,12 +48,8 @@ function GetSteamPathFromRegistry
   return $SteamPath
 }
 
-function GetUserProfiles
+function CreateFolders
 {
-  $SteamProfileDir = GetSteamPathFromRegistry
-  $UserProfiles = Get-Childitem $SteamProfileDir
-  $BackupFolder = $SteamProfileDir + "scriptbackup"
-  $DropboxPath = GetDropBoxPathFromInfoJson
   if (!(Test-Path -Path $DropboxPath\SteamConfig)) {
     New-Item -ItemType Directory -Path $DropboxPath\SteamConfig
   }
@@ -43,6 +58,16 @@ function GetUserProfiles
   {
     New-Item -ItemType Directory -Path $BackupFolder
   }
+}
+
+# Function creates necessary folders and backs up userdata, and create symlinks.
+function BackupAndCreateSymlink
+{
+  $SteamProfileDir = GetSteamPathFromRegistry
+  $UserProfiles = Get-Childitem $SteamProfileDir
+  $BackupFolder = $SteamProfileDir + "scriptbackup"
+  $DropboxPath = GetDropBoxPathFromInfoJson
+  CreateFolders
 
   foreach ($profile in $UserProfiles) 
   {
@@ -56,6 +81,6 @@ function GetUserProfiles
   return $UserProfiles
 }
 
-GetUserProfiles
+BackupAndCreateSymlink
 
 Write-Host "You can now drop your config files into SteamConfig in Dropbox"
